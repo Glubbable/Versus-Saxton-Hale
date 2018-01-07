@@ -9,14 +9,11 @@
     
     New plugin thread on AlliedMods: https://forums.alliedmods.net/showthread.php?p=2167912
 */
-#define PLUGIN_VERSION "1.55"
+#define PLUGIN_VERSION "1.56"
 #pragma semicolon 1
 #include <tf2_stocks>
 #include <tf2items>
 #include <regex>
-#if SOURCEMOD_V_MINOR > 7
-  #pragma newdecls required
-#endif
 #include <clientprefs>
 #include <sdkhooks>
 #include <morecolors>
@@ -33,6 +30,10 @@
 #tryinclude <goomba>                // But if one is included, VSH can still run with or without that plugin actually being there / working.
 #tryinclude <rtd>                   // It just won't use them if they are not there, and use them if they're loaded.
 #define REQUIRE_PLUGIN
+
+#if SOURCEMOD_V_MINOR > 7
+  #pragma newdecls optional
+#endif
 
 static bool:g_bSteamToolsIsRunning = false;
 static bool:g_bTF2AttributesIsRunning = false;
@@ -173,23 +174,59 @@ enum e_flNext2
 
 // Model
 //#define HaleModel               "models/player/saxton_hale/saxton_hale.mdl"
-#define HaleModel               "models/player/saxton_test4/saxton_hale_test4.mdl"
+//#define HaleModel               "models/player/saxton_test4/saxton_hale_test4.mdl"
+#define HaleModel               "models/player/saxton_hale_jungle_inferno/saxton_hale.mdl"
 
 // Materials
 
-static const String:HaleMatsV2[][] = {
-    "materials/models/player/saxton_test4/eyeball_l.vmt",
-    "materials/models/player/saxton_test4/eyeball_r.vmt",
-    "materials/models/player/saxton_test4/halebody.vmt",
-    "materials/models/player/saxton_test4/halebody.vtf",
-    "materials/models/player/saxton_test4/halebodyexponent.vtf",
-    "materials/models/player/saxton_test4/halehead.vmt",
-    "materials/models/player/saxton_test4/halehead.vtf",
-    "materials/models/player/saxton_test4/haleheadexponent.vtf",
-    "materials/models/player/saxton_test4/halenormal.vtf",
-    "materials/models/player/saxton_test4/halephongmask.vtf"
-    //"materials/models/player/saxton_test4/halegibs.vmt",
-    //"materials/models/player/saxton_test4/halegibs.vtf"
+static const char HaleMatsV2[][] =
+{
+	"materials/models/player/hwm_saxton_hale/saxton_belt.vmt",
+	"materials/models/player/hwm_saxton_hale/saxton_belt_high.vmt",
+	"materials/models/player/hwm_saxton_hale/saxton_belt_high.vtf",
+	"materials/models/player/hwm_saxton_hale/saxton_belt_high_normal.vtf",
+	"materials/models/player/hwm_saxton_hale/saxton_body.vmt",
+	"materials/models/player/hwm_saxton_hale/saxton_body.vtf",
+	"materials/models/player/hwm_saxton_hale/saxton_body_alt.vmt",
+	"materials/models/player/hwm_saxton_hale/saxton_body_exp.vtf",
+	"materials/models/player/hwm_saxton_hale/saxton_body_normal.vtf",
+	"materials/models/player/hwm_saxton_hale/saxton_body_saxxy.vmt",
+	"materials/models/player/hwm_saxton_hale/saxton_body_saxxy.vtf",
+	"materials/models/player/hwm_saxton_hale/saxton_hat_color.vmt",
+	"materials/models/player/hwm_saxton_hale/saxton_hat_color.vtf",
+	"materials/models/player/hwm_saxton_hale/saxton_hat_saxxy.vmt",
+	"materials/models/player/hwm_saxton_hale/saxton_hat_saxxy.vtf",
+	"materials/models/player/hwm_saxton_hale/tongue_saxxy.vmt",
+	"materials/models/player/hwm_saxton_hale/hwm/saxton_head.vmt",
+	"materials/models/player/hwm_saxton_hale/hwm/saxton_head.vtf",
+	"materials/models/player/hwm_saxton_hale/hwm/saxton_head_exponent.vtf",
+	"materials/models/player/hwm_saxton_hale/hwm/saxton_head_normal.vtf",
+	"materials/models/player/hwm_saxton_hale/hwm/saxton_head_saxxy.vmt",
+	"materials/models/player/hwm_saxton_hale/hwm/saxton_head_saxxy.vtf",
+	"materials/models/player/hwm_saxton_hale/hwm/tongue.vmt",
+	"materials/models/player/hwm_saxton_hale/hwm/tongue.vtf",
+	"materials/models/player/hwm_saxton_hale/shades/eye.vtf",
+	"materials/models/player/hwm_saxton_hale/shades/eyeball_l.vmt",
+	"materials/models/player/hwm_saxton_hale/shades/eyeball_r.vmt",
+	"materials/models/player/hwm_saxton_hale/shades/eyeball_saxxy.vmt",
+	"materials/models/player/hwm_saxton_hale/shades/eye-extra.vtf",
+	"materials/models/player/hwm_saxton_hale/shades/eye-saxxy.vtf",
+	"materials/models/player/hwm_saxton_hale/shades/inv.vmt",
+	"materials/models/player/hwm_saxton_hale/shades/null.vtf"
+
+	// Old Materials
+  	//"materials/models/player/saxton_test4/eyeball_l.vmt",
+	//"materials/models/player/saxton_test4/eyeball_r.vmt",
+	//"materials/models/player/saxton_test4/halebody.vmt",
+	//"materials/models/player/saxton_test4/halebody.vtf",
+	//"materials/models/player/saxton_test4/halebodyexponent.vtf",
+	//"materials/models/player/saxton_test4/halehead.vmt",
+	//"materials/models/player/saxton_test4/halehead.vtf",
+	//"materials/models/player/saxton_test4/haleheadexponent.vtf",
+	//"materials/models/player/saxton_test4/halenormal.vtf",
+	//"materials/models/player/saxton_test4/halephongmask.vtf"
+	//"materials/models/player/saxton_test4/halegibs.vmt",
+	//"materials/models/player/saxton_test4/halegibs.vtf"
 };
 
 // SFX
@@ -537,8 +574,9 @@ static const String:haleversiontitles[][] =     //the last line of this is what 
     "1.53",
     "1.54",
     "1.54",
-    "1.54"
-    ,PLUGIN_VERSION
+    "1.54",
+    "1.55",
+    PLUGIN_VERSION
 };
 static const String:haleversiondates[][] =
 {
@@ -550,8 +588,10 @@ static const String:haleversiondates[][] =
     "11 Sep 2015", // This will appear as the final page of the 1.54 updates
     "10 Sep 2015",
     "10 Sep 2015",
-    "12 Sep 2015"  // 1.55 update
+    "12 Sep 2015",  // 1.55 update
+    "25 Dec 2017"
 };
+
 static const maxversion = (sizeof(haleversiontitles) - 1);
 new Handle:OnHaleJump;
 new Handle:OnHaleRage;
@@ -6492,6 +6532,12 @@ FindVersionData(Handle:panel, versionindex)
 {
     switch (versionindex) // DrawPanelText(panel, "1) .");
     {
+        case 76: // 1.56
+        {
+            DrawPanelText(panel, "1) Updated Saxton Hale's model to one based on The Jungle Inferno Hale");
+            DrawPanelText(panel, "2) The Jungle Inferno Hale created by Maxxy & Velly!");
+        }
+        
         case 75: // 1.55
         {
             DrawPanelText(panel, "1) Updated Saxton Hale's model to an HD version made by thePFA");
