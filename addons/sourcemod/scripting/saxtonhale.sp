@@ -15,7 +15,7 @@
 #include <tf2items>
 #include <regex>
 #if SOURCEMOD_V_MINOR > 7
-  #pragma newdecls required
+  #pragma newdecls optional
 #endif
 #include <clientprefs>
 #include <sdkhooks>
