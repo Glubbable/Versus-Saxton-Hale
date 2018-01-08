@@ -35,10 +35,10 @@
   #pragma newdecls optional
 #endif
 
-static bool:g_bSteamToolsIsRunning = false;
-static bool:g_bTF2AttributesIsRunning = false;
-//static bool:g_bGoombaStompIsRunning = false;     // Not necessary, because we only use callbacks from these plugins - we don't call any natives ourself.
-//static bool:g_bRollTheDiceIsRunning = false;
+static bool g_bSteamToolsIsRunning = false;
+static bool g_bTF2AttributesIsRunning = false;
+//static bool g_bGoombaStompIsRunning = false;     // Not necessary, because we only use callbacks from these plugins - we don't call any natives ourself.
+//static bool g_bRollTheDiceIsRunning = false;
 
 #define CBS_MAX_ARROWS 9
 
@@ -350,7 +350,8 @@ static const char HaleMatsV2[][] =
 #define EggModel                "models/player/saxton_hale/w_easteregg.mdl"
 
 // Materials
-static const String:BunnyMaterials[][] = {
+static const char BunnyMaterials[][] =
+{
     "materials/models/player/easter_demo/demoman_head_red.vmt",
     "materials/models/player/easter_demo/easter_body.vmt",
     "materials/models/player/easter_demo/easter_body.vtf",
@@ -370,7 +371,8 @@ static const String:BunnyMaterials[][] = {
 };
 
 // SFX
-static const String:BunnyWin[][] = {
+static const char BunnyWin[][] = 
+{
     "vo/demoman_gibberish01.mp3",
     "vo/demoman_gibberish12.mp3",
     "vo/demoman_cheers02.mp3",
@@ -381,20 +383,23 @@ static const String:BunnyWin[][] = {
     "vo/taunts/demoman_taunts12.mp3"
 };
 
-static const String:BunnyJump[][] = {
+static const char BunnyJump[][] =
+{
     "vo/demoman_gibberish07.mp3",
     "vo/demoman_gibberish08.mp3",
     "vo/demoman_laughshort01.mp3",
     "vo/demoman_positivevocalization04.mp3"
 };
 
-static const String:BunnyRage[][] = {
+static const char BunnyRage[][] =
+{
     "vo/demoman_positivevocalization03.mp3",
     "vo/demoman_dominationscout05.mp3",
     "vo/demoman_cheers02.mp3"
 };
 
-static const String:BunnyFail[][] = {
+static const char BunnyFail[][] =
+{
     "vo/demoman_gibberish04.mp3",
     "vo/demoman_gibberish10.mp3",
     "vo/demoman_jeers03.mp3",
@@ -403,14 +408,16 @@ static const String:BunnyFail[][] = {
     "vo/demoman_jeers08.mp3"
 };
 
-static const String:BunnyKill[][] = {
+static const char BunnyKill[][] = 
+{
     "vo/demoman_gibberish09.mp3",
     "vo/demoman_cheers02.mp3",
     "vo/demoman_cheers07.mp3",
     "vo/demoman_positivevocalization03.mp3"
 };
 
-static const String:BunnySpree[][] = {
+static const char BunnySpree[][] =
+{
     "vo/demoman_gibberish05.mp3",
     "vo/demoman_gibberish06.mp3",
     "vo/demoman_gibberish09.mp3",
@@ -419,24 +426,28 @@ static const String:BunnySpree[][] = {
     "vo/demoman_autodejectedtie01.mp3"
 };
 
-static const String:BunnyLast[][] = {
+static const char BunnyLast[][] =
+{
     "vo/taunts/demoman_taunts05.mp3",
     "vo/taunts/demoman_taunts04.mp3",
     "vo/demoman_specialcompleted07.mp3"
 };
 
-static const String:BunnyPain[][] = {
+static const char BunnyPain[][] =
+{
     "vo/demoman_sf12_badmagic01.mp3",
     "vo/demoman_sf12_badmagic07.mp3",
     "vo/demoman_sf12_badmagic10.mp3"
 };
 
-static const String:BunnyStart[][] = {
+static const char BunnyStart[][] =
+{
     "vo/demoman_gibberish03.mp3",
     "vo/demoman_gibberish11.mp3"
 };
 
-static const String:BunnyRandomVoice[][] = {
+static const char BunnyRandomVoice[][] =
+{
     "vo/demoman_positivevocalization03.mp3",
     "vo/demoman_jeers08.mp3",
     "vo/demoman_gibberish03.mp3",
@@ -458,17 +469,17 @@ static const String:BunnyRandomVoice[][] = {
 
 #define SOUNDEXCEPT_MUSIC 0
 #define SOUNDEXCEPT_VOICE 1
-new OtherTeam = 2;
-new HaleTeam = 3;
-new VSHRoundState = VSHRState_Disabled;
-new playing;
-new healthcheckused;
-new RedAlivePlayers;
-new RoundCount;
-new Special;
-new Incoming;
+int OtherTeam = 2;
+int HaleTeam = 3;
+int VSHRoundState = VSHRState_Disabled;
+int playing;
+int healthcheckused;
+int RedAlivePlayers;
+int RoundCount;
+int Special;
+int Incoming;
 
-static bool:g_bReloadVSHOnRoundEnd = false;
+static bool g_bReloadVSHOnRoundEnd = false;
 
 static Damage[TF_MAX_PLAYERS];
 static AirDamage[TF_MAX_PLAYERS]; // Air Strike
@@ -488,84 +499,84 @@ static HaleHealthLast;
 static HaleCharge = 0;
 static HaleRage;
 static NextHale;
-static Float:g_flStabbed;
-static Float:g_flMarketed;
-//static Float:HPTime;
-//static Float:KSpreeTimer;
-static Float:WeighDownTimer;
+static float g_flStabbed;
+static float g_flMarketed;
+//static float HPTime;
+//static float KSpreeTimer;
+static float WeighDownTimer;
 static KSpreeCount = 1;
-static Float:UberRageCount;
-static Float:GlowTimer;
-static bool:bEnableSuperDuperJump;
-//static bool:bTenSecStart[2] = {false, false};
-static bool:bSpawnTeleOnTriggerHurt = false;
+static float UberRageCount;
+static float GlowTimer;
+static bool bEnableSuperDuperJump;
+//static bool bTenSecStart[2] = {false, false};
+static bool bSpawnTeleOnTriggerHurt = false;
 static HHHClimbCount;
-//static bool:bNoTaunt = false;
-static Handle:cvarCanBossRTD;
-static Handle:cvarReboundFromBossGoomba; // These apply when you goomba stomp the boss.
-static Handle:cvarDmgMultFromBossGoomba; // To change what happens when the boss goomba stomps mercenaries, use goomba stomp's original convars.
-static Handle:cvarDmgAddFromBossGoomba;
-static Handle:cvarCanBossGoombaStompPlayers; // Whether or not the boss can trigger goomba stomp against mercenaries. Does not affect whether or not players can goomba the boss.
-static Handle:cvarCanWeMantreadGoomba;
-static Handle:cvarVersion;
-static Handle:cvarHaleSpeed;
-static Handle:cvarPointDelay;
-static Handle:cvarRageDMG;
-static Handle:cvarRageDist;
-static Handle:cvarAnnounce;
-static Handle:cvarSpecials;
-static Handle:cvarEnabled;
-static Handle:cvarAliveToEnable;
-static Handle:cvarPointType;
-static Handle:cvarCrits;
-static Handle:cvarRageSentry;
-static Handle:cvarFirstRound;
-static Handle:cvarDemoShieldCrits;
-static Handle:cvarDisplayHaleHP;
-//static Handle:cvarCircuitStun;
-//static Handle:cvarForceSpecToHale;
-static Handle:cvarEnableEurekaEffect;
-static Handle:cvarForceHaleTeam;
-static Handle:PointCookie;
-static Handle:MusicCookie;
-static Handle:VoiceCookie;
-static Handle:ClasshelpinfoCookie;
-static Handle:doorchecktimer;
-static Handle:jumpHUD;
-static Handle:rageHUD;
-static Handle:healthHUD;
-static Handle:infoHUD;
-static bool:g_bEnabled = false;
-static bool:g_bAreEnoughPlayersPlaying = false;
-static Float:HaleSpeed = 340.0;
+//static bool bNoTaunt = false;
+static Handle cvarCanBossRTD;
+static Handle cvarReboundFromBossGoomba; // These apply when you goomba stomp the boss.
+static Handle cvarDmgMultFromBossGoomba; // To change what happens when the boss goomba stomps mercenaries, use goomba stomp's original convars.
+static Handle cvarDmgAddFromBossGoomba;
+static Handle cvarCanBossGoombaStompPlayers; // Whether or not the boss can trigger goomba stomp against mercenaries. Does not affect whether or not players can goomba the boss.
+static Handle cvarCanWeMantreadGoomba;
+static Handle cvarVersion;
+static Handle cvarHaleSpeed;
+static Handle cvarPointDelay;
+static Handle cvarRageDMG;
+static Handle cvarRageDist;
+static Handle cvarAnnounce;
+static Handle cvarSpecials;
+static Handle cvarEnabled;
+static Handle cvarAliveToEnable;
+static Handle cvarPointType;
+static Handle cvarCrits;
+static Handle cvarRageSentry;
+static Handle cvarFirstRound;
+static Handle cvarDemoShieldCrits;
+static Handle cvarDisplayHaleHP;
+//static Handle cvarCircuitStun;
+//static Handle cvarForceSpecToHale;
+static Handle cvarEnableEurekaEffect;
+static Handle cvarForceHaleTeam;
+static Handle PointCookie;
+static Handle MusicCookie;
+static Handle VoiceCookie;
+static Handle ClasshelpinfoCookie;
+static Handle doorchecktimer;
+static Handle jumpHUD;
+static Handle rageHUD;
+static Handle healthHUD;
+static Handle infoHUD;
+static bool g_bEnabled = false;
+static bool g_bAreEnoughPlayersPlaying = false;
+static float HaleSpeed = 340.0;
 static PointDelay = 6;
 static RageDMG = 3500;
-static Float:RageDist = 800.0;
-static Float:Announce = 120.0;
+static float RageDist = 800.0;
+static float Announce = 120.0;
 static bSpecials = true;
 static AliveToEnable = 5;
 static PointType = 0;
-static bool:haleCrits = false;
-static bool:bDemoShieldCrits = false;
-static bool:bAlwaysShowHealth = true;
-static bool:newRageSentry = true;
-//static Float:circuitStun = 0.0;
-static Handle:MusicTimer;
+static bool haleCrits = false;
+static bool bDemoShieldCrits = false;
+static bool bAlwaysShowHealth = true;
+static bool newRageSentry = true;
+//static float circuitStun = 0.0;
+static Handle MusicTimer;
 static TeamRoundCounter;
 static botqueuepoints = 0;
 static String:currentmap[99];
-static bool:checkdoors = false;
-static bool:PointReady;
+static bool checkdoors = false;
+static bool PointReady;
 static tf_arena_use_queue;
 static mp_teams_unbalance_limit;
 static tf_arena_first_blood;
 static mp_forcecamera;
-static Float:tf_scout_hype_pep_max;
+static float tf_scout_hype_pep_max;
 static tf_dropped_weapon_lifetime;
-static Float:tf_feign_death_activate_damage_scale, Float:tf_feign_death_damage_scale, Float:tf_stealth_damage_reduction, Float:tf_feign_death_duration, Float:tf_feign_death_speed_duration; // Cloak damage fixes
+static float tf_feign_death_activate_damage_scale, tf_feign_death_damage_scale, tf_stealth_damage_reduction, tf_feign_death_duration, tf_feign_death_speed_duration; // Cloak damage fixes
 static defaulttakedamagetype;
 
-static const String:haleversiontitles[][] =     //the last line of this is what determines the displayed plugin version
+static const char haleversiontitles[][] =     //the last line of this is what determines the displayed plugin version
 {
     "1.0", "1.1", "1.11", "1.12", "1.2", "1.22", "1.23", "1.24", "1.25", "1.26", "Christian Brutal Sniper", "1.28", "1.29", "1.30", "1.31", "1.32", "1.33", "1.34", "1.35", "1.35_3", "1.36", "1.36", "1.36", "1.36", "1.36", "1.36", "1.362", "1.363", "1.364", "1.365", "1.366", "1.367", "1.368", "1.369", "1.369", "1.369", "1.37", "1.37b", "1.38", "1.38", "1.39beta", "1.39beta", "1.39beta", "1.39c", "1.39c", "1.39c", "1.40", "1.41", "1.42", "1.43", "1.43", "1.43", "1.44", "1.44", "1.45", "1.45", "1.45", "1.45", "1.45", "1.46", "1.46", "1.46", "1.47", "1.47", "1.48", "1.48", "1.49", "1.50",
     "1.51", // 1.38 - (15 Nov 2011)
@@ -578,7 +589,8 @@ static const String:haleversiontitles[][] =     //the last line of this is what 
     "1.55",
     PLUGIN_VERSION
 };
-static const String:haleversiondates[][] =
+
+static const char haleversiondates[][] =
 {
     "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "--", "25 Aug 2011", "26 Aug 2011", "09 Oct 2011", "09 Oct 2011", "09 Oct 2011", "15 Nov 2011", "15 Nov 2011", "17 Dec 2011", "17 Dec 2011", "05 Mar 2012", "05 Mar 2012", "05 Mar 2012", "16 Jul 2012", "16 Jul 2012", "16 Jul 2012", "10 Oct 2012", "25 Feb 2013", "30 Mar 2013", "14 Jul 2014", "15 Jul 2014", "15 Jul 2014", "15 Jul 2014", "15 Jul 2014", "18 Jul 2014", "17 Jul 2014", "17 Jul 2014", "17 Jul 2014", "17 Jul 2014", "27 Jul 2014", "19 Jul 2014", "19 Jul 2014", "04 Aug 2014", "04 Aug 2014", "14 Aug 2014", "14 Aug 2014", "18 Aug 2014", "04 Oct 2014",
     "29 Oct 2014", //  An update I never bothered to throw outdate
@@ -593,27 +605,28 @@ static const String:haleversiondates[][] =
 };
 
 static const maxversion = (sizeof(haleversiontitles) - 1);
-new Handle:OnHaleJump;
-new Handle:OnHaleRage;
-new Handle:OnHaleWeighdown;
-new Handle:OnMusic;
-new Handle:OnHaleNext;
+Handle OnHaleJump;
+Handle OnHaleRage;
+Handle OnHaleWeighdown;
+Handle OnMusic;
+Handle OnHaleNext;
 
-//new Handle:hEquipWearable;
-//new Handle:hSetAmmoVelocity;
+//Handle hEquipWearable;
+//Handle hSetAmmoVelocity;
 
-/*new Handle:OnIsVSHMap;
-new Handle:OnIsEnabled;
-new Handle:OnGetHale;
-new Handle:OnGetTeam;
-new Handle:OnGetSpecial;
-new Handle:OnGetHealth;
-new Handle:OnGetHealthMax;
-new Handle:OnGetDamage;
-new Handle:OnGetRoundState;*/
+/*Handle OnIsVSHMap;
+Handle OnIsEnabled;
+Handle OnGetHale;
+Handle OnGetTeam;
+Handle OnGetSpecial;
+Handle OnGetHealth;
+Handle OnGetHealthMax;
+Handle OnGetDamage;
+Handle OnGetRoundState;*/
 
-//new bool:ACH_Enabled;
-public Plugin:myinfo = {
+//bool ACH_Enabled;
+public Plugin myinfo =
+{
     name = "Versus Saxton Hale",
     author = "Rainbolt Dash, FlaminSarge, Chdata, nergal, fiagram",
     description = "RUUUUNN!! COWAAAARRDSS!",
@@ -621,103 +634,109 @@ public Plugin:myinfo = {
     url = "https://forums.alliedmods.net/showthread.php?p=2167912",
 };
 
+
 // Check for whether or not optional plugins are running and relay that info to VSH.
-public OnAllPluginsLoaded()
+public void OnAllPluginsLoaded()
 {
-    g_bSteamToolsIsRunning    = LibraryExists("SteamTools");
-    g_bTF2AttributesIsRunning = LibraryExists("tf2attributes");
-    //g_bGoombaStompIsRunning   = LibraryExists("goomba");
-    //g_bRollTheDiceIsRunning   = LibraryExists("TF2: Roll the Dice");
+	g_bSteamToolsIsRunning    = LibraryExists("SteamTools");
+	g_bTF2AttributesIsRunning = LibraryExists("tf2attributes");
+	//g_bGoombaStompIsRunning   = LibraryExists("goomba");
+	//g_bRollTheDiceIsRunning   = LibraryExists("TF2: Roll the Dice");
 }
 
-public OnLibraryAdded(const String:name[])
+public void OnLibraryAdded(const char[] name)
 {
-    SetPluginDetection(name, true);
+	SetPluginDetection(name, true);
 }
 
-public OnLibraryRemoved(const String:name[])
+public void OnLibraryRemoved(const char[] name)
 {
-    SetPluginDetection(name, false);
+	SetPluginDetection(name, false);
 }
 
-SetPluginDetection(const String:name[], bool:bBool)
+void SetPluginDetection(const char[] name, bool bBool)
 {
-    if (StrEqual(name, "SteamTools"))
-    {
-        g_bSteamToolsIsRunning = bBool;
-    }
-    else if (StrEqual(name, "tf2attributes"))
-    {
-        g_bTF2AttributesIsRunning = bBool;
-    }
-    /*else if (StrEqual(name, "goomba"))
-    {
-        g_bGoombaStompIsRunning = bBool;
-    }
-    else if (StrEqual(name, "TF2: Roll the Dice"))
-    {
-        g_bRollTheDiceIsRunning = bBool;
-    }*/
-    /*else if (StrEqual(name, "hale_achievements"))
-    {
-        ACH_Enabled = bBool;
-    }*/
+	if (StrEqual(name, "SteamTools"))
+	{
+        	g_bSteamToolsIsRunning = bBool;
+	}
+
+    	else if (StrEqual(name, "tf2attributes"))
+    	{
+        	g_bTF2AttributesIsRunning = bBool;
+    	}
+
+    	/*else if (StrEqual(name, "goomba"))
+    	{
+        	g_bGoombaStompIsRunning = bBool;
+    	}
+
+    	else if (StrEqual(name, "TF2: Roll the Dice"))
+    	{
+       	 	g_bRollTheDiceIsRunning = bBool;
+    	}*/
+
+    	/*else if (StrEqual(name, "hale_achievements"))
+    	{
+        	ACH_Enabled = bBool;
+    	}*/
 }
 
-public APLRes:AskPluginLoad2(Handle:myself, bool:late, String:error[], err_max)
+public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
-    MarkNativeAsOptional("GetUserMessageType");
-    MarkNativeAsOptional("PbSetInt");
-    MarkNativeAsOptional("PbSetBool");
-    MarkNativeAsOptional("PbSetString");
-    MarkNativeAsOptional("PbAddString");
-/*  CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
-    OnIsVSHMap = CreateGlobalForward("VSH_OnIsSaxtonHaleModeMap", ET_Hook, Param_CellByRef);
+	MarkNativeAsOptional("GetUserMessageType");
+	MarkNativeAsOptional("PbSetInt");
+	MarkNativeAsOptional("PbSetBool");
+	MarkNativeAsOptional("PbSetString");
+	MarkNativeAsOptional("PbAddString");
+/*  	CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
+	OnIsVSHMap = CreateGlobalForward("VSH_OnIsSaxtonHaleModeMap", ET_Hook, Param_CellByRef);
     
-    CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
-    OnIsEnabled = CreateGlobalForward("VSH_OnIsSaxtonHaleModeEnabled", ET_Hook, Param_CellByRef);
+	CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
+	OnIsEnabled = CreateGlobalForward("VSH_OnIsSaxtonHaleModeEnabled", ET_Hook, Param_CellByRef);
     
-    CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
-    OnGetHale = CreateGlobalForward("VSH_OnGetSaxtonHaleUserId", ET_Hook, Param_CellByRef);
+	CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
+	OnGetHale = CreateGlobalForward("VSH_OnGetSaxtonHaleUserId", ET_Hook, Param_CellByRef);
     
-    CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
-    OnGetTeam = CreateGlobalForward("VSH_OnGetSaxtonHaleTeam", ET_Hook, Param_CellByRef);
+	CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
+	OnGetTeam = CreateGlobalForward("VSH_OnGetSaxtonHaleTeam", ET_Hook, Param_CellByRef);
     
-    CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
-    OnGetSpecial = CreateGlobalForward("VSH_OnGetSpecialRoundIndex", ET_Hook, Param_CellByRef);
+	CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
+    	OnGetSpecial = CreateGlobalForward("VSH_OnGetSpecialRoundIndex", ET_Hook, Param_CellByRef);
     
-    CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
-    OnGetHealth = CreateGlobalForward("VSH_OnGetSaxtonHaleHealth", ET_Hook, Param_CellByRef);
+    	CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
+    	OnGetHealth = CreateGlobalForward("VSH_OnGetSaxtonHaleHealth", ET_Hook, Param_CellByRef);
     
-    CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
-    OnGetHealthMax = CreateGlobalForward("VSH_OnGetSaxtonHaleHealthMax", ET_Hook, Param_CellByRef);
+    	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
+    	OnGetHealthMax = CreateGlobalForward("VSH_OnGetSaxtonHaleHealthMax", ET_Hook, Param_CellByRef);
     
-    CreateNative("VSH_GetClientDamage", Native_GetDamage);
-    OnGetDamage = CreateGlobalForward("VSH_OnGetClientDamage", ET_Hook, Param_Cell,Param_CellByRef);
+    	CreateNative("VSH_GetClientDamage", Native_GetDamage);
+    	OnGetDamage = CreateGlobalForward("VSH_OnGetClientDamage", ET_Hook, Param_Cell,Param_CellByRef);
     
-    CreateNative("VSH_GetRoundState", Native_GetRoundState);
-    OnGetRoundState = CreateGlobalForward("VSH_OnGetRoundState", ET_Hook, Param_CellByRef);*/
+    	CreateNative("VSH_GetRoundState", Native_GetRoundState);
+    	OnGetRoundState = CreateGlobalForward("VSH_OnGetRoundState", ET_Hook, Param_CellByRef);*/
 
-    CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
-    CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
-    CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
-    CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
-    CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
-    CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
-    CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
-    CreateNative("VSH_GetClientDamage", Native_GetDamage);
-    CreateNative("VSH_GetRoundState", Native_GetRoundState);
-    OnHaleJump = CreateGlobalForward("VSH_OnDoJump", ET_Hook, Param_CellByRef);
-    OnHaleRage = CreateGlobalForward("VSH_OnDoRage", ET_Hook, Param_FloatByRef);
-    OnHaleWeighdown = CreateGlobalForward("VSH_OnDoWeighdown", ET_Hook);
-    OnMusic = CreateGlobalForward("VSH_OnMusic", ET_Hook, Param_String, Param_FloatByRef);
-    OnHaleNext = CreateGlobalForward("VSH_OnHaleNext", ET_Hook, Param_Cell);
-    RegPluginLibrary("saxtonhale");
+    	CreateNative("VSH_IsSaxtonHaleModeMap", Native_IsVSHMap);
+    	CreateNative("VSH_IsSaxtonHaleModeEnabled", Native_IsEnabled);
+    	CreateNative("VSH_GetSaxtonHaleUserId", Native_GetHale);
+    	CreateNative("VSH_GetSaxtonHaleTeam", Native_GetTeam);
+    	CreateNative("VSH_GetSpecialRoundIndex", Native_GetSpecial);
+    	CreateNative("VSH_GetSaxtonHaleHealth", Native_GetHealth);
+    	CreateNative("VSH_GetSaxtonHaleHealthMax", Native_GetHealthMax);
+    	CreateNative("VSH_GetClientDamage", Native_GetDamage);
+    	CreateNative("VSH_GetRoundState", Native_GetRoundState);
+    	OnHaleJump = CreateGlobalForward("VSH_OnDoJump", ET_Hook, Param_CellByRef);
+    	OnHaleRage = CreateGlobalForward("VSH_OnDoRage", ET_Hook, Param_FloatByRef);
+    	OnHaleWeighdown = CreateGlobalForward("VSH_OnDoWeighdown", ET_Hook);
+    	OnMusic = CreateGlobalForward("VSH_OnMusic", ET_Hook, Param_String, Param_FloatByRef);
+    	OnHaleNext = CreateGlobalForward("VSH_OnHaleNext", ET_Hook, Param_Cell);
+    	RegPluginLibrary("saxtonhale");
 #if defined _steamtools_included
-    MarkNativeAsOptional("Steam_SetGameDescription");
+    	MarkNativeAsOptional("Steam_SetGameDescription");
 #endif
-    return APLRes_Success;
+    	return APLRes_Success;
 }
+
 /*InitGamedata()
 {
 #if defined EASTER_BUNNY_ON
